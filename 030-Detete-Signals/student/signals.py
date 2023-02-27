@@ -4,7 +4,7 @@ from django.db.models.signals import (
     pre_save,
     post_save,
 )
-from .models import Student
+from .models import Student, Teacher
 from django.dispatch import receiver
 
 @receiver(pre_delete, sender=Student)
@@ -26,3 +26,8 @@ def pre_save(sender, instance: Student, **kwargs):
     print(f'Student Teacher: {instance.teacher}')
     print(f'Student ID: {instance.pk}')
     print('******** END PRE SAVE ********')
+
+    Teacher.objects.create(
+        firstname=instance.teacher,
+        surname=instance.teacher
+    )
