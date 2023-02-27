@@ -7,5 +7,5 @@ def pre_delete(sender, **kwargs):
     print('You are about to delete sumn')
 
 @receiver(post_delete, sender=Student)
-def post_delete(ender, **kwargs):
+def post_delete(sender, **kwargs):
     print('You just deleted a student or sumn')
