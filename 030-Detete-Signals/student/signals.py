@@ -31,3 +31,9 @@ def pre_save(sender, instance: Student, **kwargs):
         firstname=instance.teacher,
         surname=instance.teacher
     )
+
+@receiver(post_save, sender=Student)
+def post_save(sender, instance: Student, **kwargs):
+    print('******** START POST SAVE ********')
+    print(f'Student ID: {instance.pk}')
+    print('******** END POST SAVE ********')
