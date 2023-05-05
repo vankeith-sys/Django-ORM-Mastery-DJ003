@@ -32,7 +32,11 @@ def student_list(request):
     #     )
 
     posts = Student.objects.filter(
-        Exists(Teacher.objects.filter(
+        # get all students where
+        Exists(
+            # ... where the student's teacher
+            # ... is exists in the teacher model
+            Teacher.objects.filter(
             firstname=OuterRef('teacher')
         ))
     ).order_by('id')
@@ -40,18 +44,6 @@ def student_list(request):
     print(posts.query)
 
     """
-    SELECT "student_student"."id", "student_student"."firstname",
-    "student_student"."surname", "student_student"."age",
-    "student_student"."classroom", "student_student"."teacher"
-
-    FROM "student_student"
-    WHERE EXISTS(
-        SELECT (1) AS "a"
-        FROM "student_student" U0
-        WHERE U0."teacher" = ("student_student"."teacher")
-        LIMIT 1
-    ) ORDER BY "student_student"."id" ASC
-    ____________________________
 
     SELECT "student_student"."id", "student_student"."firstname",
     "student_student"."surname", "student_student"."age",
