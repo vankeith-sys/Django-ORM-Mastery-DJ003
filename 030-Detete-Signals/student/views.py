@@ -48,7 +48,11 @@ def student_list(request):
             # ... does not exist in the teacher model
             Teacher.objects.filter(
             firstname=OuterRef('teacher')
-        ))
+        )),
+        # ... and where the age is greater than or equal to 18
+        Q(age__gte = 18),
+        # ... but less than 20
+        Q(age__lt = 20)
     ).order_by('id')
 
     print(posts.query)
