@@ -31,11 +31,21 @@ def student_list(request):
     #         Q (surname__startswith='avery-parker')
     #     )
 
+    # posts = Student.objects.filter(
+    #     # get all students where
+    #     Exists(
+    #         # ... where the student's teacher
+    #         # ... is exists in the teacher model
+    #         Teacher.objects.filter(
+    #         firstname=OuterRef('teacher')
+    #     ))
+    # ).order_by('id')
+
     posts = Student.objects.filter(
         # get all students where
-        Exists(
+        ~Exists(
             # ... where the student's teacher
-            # ... is exists in the teacher model
+            # ... does not exist in the teacher model
             Teacher.objects.filter(
             firstname=OuterRef('teacher')
         ))
