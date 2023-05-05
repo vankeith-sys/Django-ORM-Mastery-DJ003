@@ -6,6 +6,34 @@ from django.db.models import Q, Exists, OuterRef
 
 # Part 2
 #################################################################
+
+def find_student_classroom(student: Student) -> str:
+    qs = Student.objects.filter(
+        ~Exists(
+            # ... where the student's teacher
+            # ... does not exist in the teacher model
+            Teacher.objects.filter(
+            firstname=OuterRef('teacher')
+        )),
+        # ... and the id is equal to the passed id
+        id = student.id,
+        # ... and the classroom is >= 5
+        classroom__gte = 5,
+        # ... and the classroom is < 8
+        classroom__lt = 8
+    ).first()
+
+    if qs is None:
+        # classrooms that ARE NOT in the range of 5 to 7,
+        # are marked as Dirty
+        return 'Dirty Classroom'
+    else:
+        # classrooms within the range of 5 to 7,
+        # are marked as Clean
+        return 'Clean Classroom'
+
+
+
 def student_list_(request):
 
     posts = Student.objects.all()
@@ -55,6 +83,20 @@ def student_list(request):
         Q(age__lt = 20)
     ).order_by('id')
 
+    classroom_status = []
+    for post in posts:
+        status = find_student_classroom(post)
+        classroom_status.append({
+            'id':post.id,
+            'firstname':post.firstname,
+            'surname':post.surname,
+            'age':post.age,
+            'classroom':post.classroom,
+            'classroom_state': status,
+            'teacher':post.teacher
+        })
+
+
     print(posts.query)
 
     """
@@ -72,24 +114,13 @@ def student_list(request):
     ) ORDER BY "student_student"."id" ASC
     """
 
-
-    data = []
-    for post in posts:
-        data.append({
-            'id':post.id,
-            'firstname':post.firstname,
-            'surname':post.surname,
-            'age':post.age,
-            'classroom':post.classroom,
-            'teacher':post.teacher
-        })
     res = {
-        "data": data
+        "data": classroom_status
     }
 
     # print(posts)
     # print(connection.queries)
 
-    print(data)
+    print(classroom_status)
 
     return render(request, 'output.html', res)
